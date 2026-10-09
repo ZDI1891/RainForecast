@@ -1,0 +1,94 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RainWatch</title>
+<style>
+body{margin:0;background:#080d19;color:#edf3ff;font:15px Arial,sans-serif;padding:16px}
+h1{color:#7dd3fc}h2{font-size:18px}
+.card{background:#111a2b;border:1px solid #293550;border-radius:14px;padding:16px;margin:12px 0}
+.big{font-size:28px;font-weight:bold;color:#7dd3fc}
+button{background:#5eead4;color:#06201f;border:0;border-radius:9px;padding:12px;margin:4px;font-weight:bold}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{text-align:left;padding:9px;border-bottom:1px solid #293550}
+.wrap{overflow-x:auto}small{color:#9baac5}
+iframe{width:100%;height:350px;border:0;border-radius:10px}
+</style>
+</head>
+<body>
+<h1>RainWatch</h1>
+<div id="place">Requesting your location…</div>
+<button onclick="locate()">Use my location</button>
+<button onclick="load()">Refresh forecast</button>
+<div class="card">
+<h2>Rain forecast</h2>
+<div class="big" id="headline">Loading…</div>
+<p id="summary">Fetching forecast</p>
+<p id="next"></p>
+<p id="storm"></p>
+<p id="peak"></p>
+</div>
+<div class="card">
+<h2>Next 24 hours</h2>
+<div class="wrap"><table>
+<thead><tr><th>Time</th><th>Rain %</th><th>Rain mm</th><th>Storm</th></tr></thead>
+<tbody id="hours"><tr><td colspan="4">Loading…</td></tr></tbody>
+</table></div>
+</div>
+<div class="card">
+<h2>7-day rainfall</h2>
+<div id="days">Loading…</div>
+</div>
+<div class="card">
+<h2>Rain map</h2>
+<iframe id="map" title="Local weather map"></iframe>
+</div>
+<small>Forecast: Open-Meteo. Map: Windy. Model forecasts are estimates, not guaranteed conditions or official warnings. Location access requires permission. Keep this page open for refreshes.</small>
+<script>
+let lat=8.498,lon=76.944,local=false;
+const $=id=>document.getElementById(id);
+function locate(){
+if(!navigator.geolocation){$("place").textContent="Location unavailable. Using Trivandrum.";load();return}
+$("place").textContent="Requesting location permission…";
+navigator.geolocation.getCurrentPosition(p=>{
+lat=p.coords.latitude;lon=p.coords.longitude;local=true;
+$("place").textContent="Your location: "+lat.toFixed(3)+", "+lon.toFixed(3);
+load();
+},()=>{$("place").textContent="Location denied/unavailable. Using Trivandrum.";load()},
+{enableHighAccuracy:true,timeout:12000});
+}
+async function load(){
+$("headline").textContent="Loading forecast…";
+try{
+const u="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&hourly=precipitation_probability,precipitation,weather_code,wind_gusts_10m&daily=precipitation_sum,precipitation_probability_max,weather_code&forecast_days=7&timezone=auto";
+const r=await fetch(u);if(!r.ok)throw Error("Weather service unavailable");
+const d=await r.json(),h=d.hourly,now=Date.now();
+let ids=h.time.map((t,i)=>({t:new Date(t),i})).filter(x=>x.t.getTime()>=now).slice(0,24);
+if(!ids.length)throw Error("No hourly forecast available");
+const ix=ids[0].i;
+const sum=n=>ids.slice(0,n).reduce((a,x)=>a+(h.precipitation[x.i]||0),0);
+const chance=Math.max(...ids.slice(0,12).map(x=>h.precipitation_probability[x.i]||0));
+const peak=Math.max(...ids.slice(0,12).map(x=>h.precipitation[x.i]||0));
+const codes=ids.map(x=>h.weather_code[x.i]);
+const storm=codes.some(c=>[95,96,99].includes(c));
+const rain=sum(3);
+$("headline").textContent=rain>=1?"Rain expected soon":chance>=50?"Rain possible":"Low near-term rain signal";
+$("summary").textContent="Rain chance next 12h: "+chance+"% · Rain next 3h: "+rain.toFixed(1)+" mm · Next 6h: "+sum(6).toFixed(1)+" mm";
+$("next").textContent="Rainfall peak in next 12h: "+peak.toFixed(1)+" mm/hour";
+$("storm").textContent=storm?"⚡ Thunderstorm indicated in the next 24 hours":"No thunderstorm code detected in the next 24 hours";
+$("peak").textContent="Daily rainfall forecast: "+d.daily.precipitation_sum[0]+" mm";
+$("hours").innerHTML=ids.map(x=>{
+let i=x.i,c=h.weather_code[i],s=[95,96,99].includes(c)?"⚡ Yes":"—";
+return "<tr><td>"+x.t.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</td><td>"+(h.precipitation_probability[i]??0)+"%</td><td>"+(h.precipitation[i]??0).toFixed(1)+"</td><td>"+s+"</td></tr>";
+}).join("");
+$("days").innerHTML=d.daily.time.map((t,i)=>"<p><b>"+new Date(t+"T12:00:00").toLocaleDateString([],{weekday:"short",day:"numeric"})+"</b> — "+d.daily.precipitation_sum[i]+" mm · "+d.daily.precipitation_probability_max[i]+"% chance</p>").join("");
+$("map").src="https://embed.windy.com/embed2.html?lat="+lat+"&lon="+lon+"&detailLat="+lat+"&detailLon="+lon+"&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=true&marker=true";
+}catch(e){$("headline").textContent="Forecast unavailable";$("summary").textContent=e.message+" — check your internet and refresh."}
+}
+locate();
+setInterval(load,900000);
+</script>
+</body>
+</html>
