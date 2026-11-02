@@ -5,7 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#071426">
-<title>RainWatch | Rain & Storm Forecast</title>
+<title>RainWatch By ZDI | Rain & Storm Forecast</title>
+
 <style>
 :root {
   color-scheme: dark;
@@ -19,109 +20,336 @@
   --amber: #ffb547;
   --red: #ff7185;
 }
+
 * { box-sizing: border-box; }
+
 body {
-  margin: 0; background: var(--bg); color: var(--text);
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
   font: 16px/1.5 system-ui, -apple-system, sans-serif;
 }
-main { max-width: 850px; margin: auto; padding: 20px 15px 40px; }
-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px; }
-h1 { margin:0; font-size:32px; letter-spacing:-1px; }
-h1 span { color:var(--blue); }
-.subtitle { margin:2px 0 0; color:var(--muted); font-size:14px; }
-.brand-credit {
-  margin: 5px 0 0;
+
+main {
+  max-width: 850px;
+  margin: auto;
+  padding: 20px 15px 40px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -1px;
+}
+
+h1 span { color: var(--blue); }
+
+.subtitle {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+button {
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 14px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.location {
   color: var(--blue);
-  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
+  margin: 0;
 }
-button, select {
-  font:inherit; border:1px solid var(--border); border-radius:12px;
-  padding:11px 14px; background:var(--panel); color:var(--text);
+
+.location-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--blue);
+  background: transparent;
+  font-size: 17px;
 }
-button { cursor:pointer; }
-button.primary { background:#174b78; border-color:#286b9f; }
-button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+
+.location-refresh:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
 .card {
-  background:var(--panel); border:1px solid var(--border);
-  border-radius:20px; padding:18px; margin:14px 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  margin: 14px 0;
 }
-.eyebrow { color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:1px; }
-.status { border-color:#22614f; background:linear-gradient(135deg,#103b39,#10283a); }
-.status h2 { font-size:27px; line-height:1.2; margin:7px 0; }
-.status p { color:#d0e0ee; margin:7px 0; }
-.location { color:var(--blue); font-weight:600; margin-bottom:8px; }
-.metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:20px; }
-.metric { border-top:1px solid #35605d; padding-top:13px; min-width:0; }
-.metric strong { display:block; font-size:23px; overflow-wrap:anywhere; }
-.metric span { display:block; color:#c3d1e0; font-size:13px; }
-h2.section-title { font-size:21px; margin:0 0 5px; }
-.help { color:var(--muted); font-size:14px; margin:0 0 14px; }
-.hourly { display:grid; grid-auto-columns:92px; grid-auto-flow:column; gap:9px; overflow-x:auto; padding:2px 0 8px; }
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status {
+  border-color: #22614f;
+  background: linear-gradient(135deg,#103b39,#10283a);
+}
+
+.status h2 {
+  font-size: 27px;
+  line-height: 1.2;
+  margin: 7px 0;
+}
+
+.status p {
+  color: #d0e0ee;
+  margin: 7px 0;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.metric {
+  border-top: 1px solid #35605d;
+  padding-top: 13px;
+  min-width: 0;
+}
+
+.metric strong {
+  display: block;
+  font-size: 23px;
+  overflow-wrap: anywhere;
+}
+
+.metric span {
+  display: block;
+  color: #c3d1e0;
+  font-size: 13px;
+}
+
+h2.section-title {
+  font-size: 21px;
+  margin: 0 0 5px;
+}
+
+.help {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+
+.rain-outlook {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(7,20,38,.45);
+  border: 1px solid rgba(168,184,204,.18);
+  border-radius: 13px;
+}
+
+.rain-outlook strong {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.rain-outlook p {
+  margin: 0;
+  color: #d0e0ee;
+  font-size: 14px;
+}
+
+.hourly {
+  display: grid;
+  grid-auto-columns: 92px;
+  grid-auto-flow: column;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 2px 0 8px;
+}
+
 .hour {
-  text-align:center; background:#0b192b; border:1px solid var(--border);
-  border-radius:14px; padding:12px 6px; min-height:140px;
+  text-align: center;
+  background: #0b192b;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 6px;
+  min-height: 140px;
 }
-.hour .time { font-size:13px; color:var(--muted); }
-.hour .symbol { font-size:25px; margin:7px 0; }
-.hour strong { display:block; }
-.hour small { color:var(--blue); display:block; margin-top:4px; }
-.alert { border-left:4px solid var(--amber); }
-.alert h3 { margin:0 0 5px; font-size:19px; }
-.alert p { margin:0; color:#d2dceb; }
-.alert.danger { border-left-color:var(--red); }
-.alert.safe { border-left-color:var(--green); }
-.day { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
-.day:last-child { border-bottom:0; }
-.day .desc { color:var(--muted); font-size:13px; }
-.actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-.actions button { min-height:58px; text-align:left; }
-.map { width:100%; height:340px; border:0; border-radius:14px; }
-footer { color:var(--muted); font-size:12px; text-align:center; padding:16px 4px; }
-#message { color:var(--muted); font-size:13px; }
+
+.hour .time {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.hour .symbol {
+  font-size: 25px;
+  margin: 7px 0;
+}
+
+.hour strong { display: block; }
+
+.hour small {
+  color: var(--blue);
+  display: block;
+  margin-top: 4px;
+}
+
+.alert {
+  border-left: 4px solid var(--amber);
+}
+
+.alert h3 {
+  margin: 0 0 5px;
+  font-size: 19px;
+}
+
+.alert p {
+  margin: 0;
+  color: #d2dceb;
+}
+
+.alert.danger { border-left-color: var(--red); }
+
+.day {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.day:last-child { border-bottom: 0; }
+
+.day .desc {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.day .weather-icon {
+  font-size: 22px;
+  margin-right: 7px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+}
+
+.actions button {
+  min-height: 55px;
+  text-align: center;
+}
+
+.map {
+  width: 100%;
+  height: 340px;
+  border: 0;
+  border-radius: 14px;
+}
+
+footer {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  padding: 16px 4px;
+}
+
+#message {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 @media(max-width:420px) {
-  main { padding:16px 12px 30px; }
-  h1 { font-size:28px; }
-  .status h2 { font-size:24px; }
-  .card { padding:15px; }
-  .metric strong { font-size:20px; }
-  .actions { grid-template-columns:1fr; }
+  main { padding: 16px 12px 30px; }
+  h1 { font-size: 28px; }
+  .status h2 { font-size: 24px; }
+  .card { padding: 15px; }
+  .metric strong { font-size: 20px; }
 }
 </style>
 </head>
+
 <body>
 <main>
+
 <header>
   <div>
-    <h1>Rain<span>Watch</span></h1>
+    <h1>RainWatch <span>By ZDI</span></h1>
     <p class="subtitle">Simple rain &amp; storm forecasts</p>
-    <p class="brand-credit">Created &amp; Developed by ZDI</p>
   </div>
-  <button class="primary" id="locBtn">My location</button>
 </header>
 
-<div class="location" id="location">Trivandrum, Kerala</div>
+<div class="location-row">
+  <div class="location" id="location">Detecting your location…</div>
+  <button
+    class="location-refresh"
+    id="locRefresh"
+    aria-label="Refresh location"
+    title="Refresh location"
+  >↻</button>
+</div>
 
 <section class="card status" aria-live="polite">
   <div class="eyebrow">Your local forecast</div>
   <h2 id="headline">Checking the forecast…</h2>
   <p id="summary">Getting the latest available weather forecast.</p>
   <p id="updated"></p>
+
   <div class="metrics">
     <div class="metric">
       <strong id="rainChance">—</strong>
       <span>Rain chance<br>next 12 hours</span>
     </div>
+
     <div class="metric">
       <strong id="rainAmount">—</strong>
       <span>Expected rain<br>next 6 hours</span>
     </div>
+
     <div class="metric">
       <strong id="stormRisk">—</strong>
       <span>Thunderstorm<br>next 24 hours</span>
     </div>
+  </div>
+
+  <div class="rain-outlook">
+    <strong id="rainTimingTitle">Rain outlook</strong>
+    <p id="rainTiming">Checking expected rain timing…</p>
   </div>
 </section>
 
@@ -133,61 +361,87 @@ footer { color:var(--muted); font-size:12px; text-align:center; padding:16px 4px
   </div>
 </section>
 
-<section class="card alert" id="warning" aria-live="polite">
-  <h3 id="warningTitle">Checking for rain and storms</h3>
-  <p id="warningText">Please wait while the forecast loads.</p>
+<section class="card alert" id="warning" hidden aria-live="polite">
+  <h3 id="warningTitle"></h3>
+  <p id="warningText"></p>
 </section>
 
 <section class="card">
-  <h2 class="section-title">The next 7 days</h2>
-  <p class="help">A quick look at the days ahead.</p>
-  <div id="daily">Loading daily forecast…</div>
+  <h2 class="section-title">The next 3 days</h2>
+  <p class="help">Today, tomorrow and the day after.</p>
+  <div id="daily">Loading forecast…</div>
 </section>
 
 <section class="card">
-  <h2 class="section-title">Your RainWatch tools</h2>
+  <h2 class="section-title">RainWatch tools</h2>
   <p class="help">Choose what you want to do.</p>
+
   <div class="actions">
-    <button id="locBtn2">◎ Use my current location</button>
     <button id="mapBtn">⌖ View rain map</button>
-    <button id="alertBtn">♧ How to get alerts</button>
     <button id="refreshBtn">↻ Refresh forecast</button>
   </div>
+
   <p id="message" aria-live="polite"></p>
 </section>
 
 <section class="card" id="mapSection" hidden>
   <h2 class="section-title">Rain map</h2>
-  <p class="help">Open the map layers to explore rain and weather patterns.</p>
-  <iframe class="map" id="windy" title="Windy rain forecast map" loading="lazy" allowfullscreen></iframe>
-  <p><a id="windyLink" href="https://www.windy.com/" target="_blank" rel="noopener">Open Windy in a new tab</a></p>
+  <p class="help">Explore rain and weather patterns around your location.</p>
+
+  <iframe
+    class="map"
+    id="windy"
+    title="Windy rain forecast map"
+    loading="lazy"
+    allowfullscreen
+  ></iframe>
+
+  <p>
+    <a id="windyLink" href="https://www.windy.com/" target="_blank" rel="noopener">
+      Open Windy in a new tab
+    </a>
+  </p>
 </section>
 
 <footer>
   Forecasts are estimates, not official emergency warnings or live lightning detection.
   Data: Open-Meteo. Always follow local authorities during severe weather.
 </footer>
+
 </main>
 
 <script>
 const DEFAULT_LAT = 8.498;
 const DEFAULT_LON = 76.944;
+
 let lat = DEFAULT_LAT;
 let lon = DEFAULT_LON;
 let place = "Trivandrum, Kerala";
 
 const $ = id => document.getElementById(id);
+
 const num = (v, digits=1) =>
   Number.isFinite(Number(v)) ? Number(v).toFixed(digits) : "0";
+
 const rainText = n => `${num(n)} mm`;
+
 const timeLabel = s => new Date(s).toLocaleTimeString([], {
-  hour:"numeric", hour12:true
+  hour: "numeric",
+  hour12: true
 });
+
 const dayLabel = s => new Date(s+"T12:00:00").toLocaleDateString([], {
-  weekday:"short", day:"numeric", month:"short"
+  weekday: "long",
+  day: "numeric",
+  month: "short"
 });
+
 const isStorm = c => [95,96,97,98,99].includes(Number(c));
-const isWet = c => [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,97,98,99].includes(Number(c));
+
+const isWet = c => [
+  51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,97,98,99
+].includes(Number(c));
+
 const symbol = c => {
   c = Number(c);
   if (isStorm(c)) return "⛈️";
@@ -197,82 +451,174 @@ const symbol = c => {
   if (c === 0) return "☀️";
   return "☁️";
 };
+
 const description = c => {
   c = Number(c);
   if (isStorm(c)) return "Thunderstorm";
   if ([65,67,82].includes(c)) return "Heavy rain";
-  if ([61,63,80,81].includes(c)) return "Rain possible";
+  if ([61,63,80,81].includes(c)) return "Rain";
   if ([51,53,55,56,57].includes(c)) return "Light drizzle";
   if ([71,73,75,77,85,86].includes(c)) return "Snow";
-  if (c===0) return "Clear skies";
+  if (c === 0) return "Clear skies";
   if ([1,2].includes(c)) return "Partly cloudy";
-  if (c===3) return "Cloudy";
+  if (c === 3) return "Overcast";
   if ([45,48].includes(c)) return "Fog";
   return "Changeable weather";
 };
 
 function setLocationLabel() {
   $("location").textContent = place;
-  $("windy").src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=true`;
-  $("windyLink").href = `https://www.windy.com/${lat}/${lon}?rain,${lat},${lon},9`;
+
+  $("windy").src =
+    `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&width=650&height=450&zoom=9&level=surface&overlay=rain&product=ecmwf&menu=&message=true`;
+
+  $("windyLink").href =
+    `https://www.windy.com/${lat}/${lon}?rain,${lat},${lon},9`;
+}
+
+function getRainIntensity(amount) {
+  if (amount >= 7.5) return "Heavy rain";
+  if (amount >= 2.5) return "Moderate rain";
+  return "Light rain";
+}
+
+function updateRainTiming(hourly, start) {
+  const times = hourly.time.slice(start, start + 12);
+  const amounts = hourly.precipitation.slice(start, start + 12);
+  const probabilities = hourly.precipitation_probability.slice(start, start + 12);
+
+  const rainIndex = amounts.findIndex((amount, i) =>
+    Number(amount) >= 0.1 || Number(probabilities[i]) >= 50
+  );
+
+  if (rainIndex === -1) {
+    $("rainTimingTitle").textContent = "Rain outlook";
+    $("rainTiming").textContent =
+      "No significant rain is indicated in the next 12 hours.";
+    return;
+  }
+
+  const amount = Number(amounts[rainIndex]) || 0;
+  const probability = Number(probabilities[rainIndex]) || 0;
+
+  $("rainTimingTitle").textContent = "Expected rain";
+
+  if (amount >= 0.1) {
+    $("rainTiming").textContent =
+      `${getRainIntensity(amount)} may occur around ${timeLabel(times[rainIndex])}. Estimated hourly rainfall: ${num(amount)} mm.`;
+  } else {
+    $("rainTiming").textContent =
+      `Rain is possible around ${timeLabel(times[rainIndex])}. Probability: ${Math.round(probability)}%.`;
+  }
 }
 
 async function loadForecast() {
   $("message").textContent = "Updating forecast…";
   $("refreshBtn").disabled = true;
+
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,precipitation,weather_code&hourly=precipitation_probability,precipitation,weather_code,temperature_2m&daily=precipitation_probability_max,precipitation_sum,weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7&timezone=auto`;
+    const url =
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,precipitation,weather_code&hourly=precipitation_probability,precipitation,weather_code,temperature_2m&daily=precipitation_probability_max,precipitation_sum,weather_code,temperature_2m_max,temperature_2m_min&forecast_days=3&timezone=auto`;
+
     const res = await fetch(url);
-    if (!res.ok) throw new Error("Forecast service unavailable");
+
+    if (!res.ok) {
+      throw new Error(`Weather service returned HTTP ${res.status}`);
+    }
+
     const data = await res.json();
+
+    if (data.error) {
+      throw new Error(data.reason || "Weather service error");
+    }
+
     const h = data.hourly;
     const d = data.daily;
     const now = new Date();
+
     let start = h.time.findIndex(t => new Date(t) >= now);
     if (start < 0) start = 0;
 
     const next12 = h.precipitation_probability.slice(start,start+12);
-    const chance = Math.max(0,...next12.map(Number).filter(Number.isFinite));
-    const rain6 = h.precipitation.slice(start,start+6).reduce((a,b)=>a+(Number(b)||0),0);
-    const stormIndex = h.weather_code.slice(start,start+24).findIndex(isStorm);
-    const next3Rain = h.precipitation.slice(start,start+3).reduce((a,b)=>a+(Number(b)||0),0);
-    const next3Chance = Math.max(0,...h.precipitation_probability.slice(start,start+3).map(Number).filter(Number.isFinite));
+
+    const chance = Math.max(
+      0,
+      ...next12.map(Number).filter(Number.isFinite)
+    );
+
+    const rain6 = h.precipitation
+      .slice(start,start+6)
+      .reduce((a,b) => a+(Number(b)||0),0);
+
+    const stormIndex = h.weather_code
+      .slice(start,start+24)
+      .findIndex(isStorm);
+
+    const next3Rain = h.precipitation
+      .slice(start,start+3)
+      .reduce((a,b) => a+(Number(b)||0),0);
+
+    const next3Chance = Math.max(
+      0,
+      ...h.precipitation_probability
+        .slice(start,start+3)
+        .map(Number)
+        .filter(Number.isFinite)
+    );
+
     const current = data.current;
 
     $("rainChance").textContent = `${Math.round(chance)}%`;
     $("rainAmount").textContent = rainText(rain6);
     $("stormRisk").textContent = stormIndex >= 0 ? "Possible" : "Low";
 
-    const nearWet = h.weather_code.slice(start,start+3).some(isWet);
+    const nearWet = h.weather_code
+      .slice(start,start+3)
+      .some(isWet);
+
     if (stormIndex >= 0) {
       $("headline").textContent = "Thunderstorms possible";
-      $("summary").textContent = `Storm conditions appear in the forecast within the next ${stormIndex+1} hour(s). Check local warnings.`;
+      $("summary").textContent =
+        `Storm conditions appear in the forecast within the next ${stormIndex+1} hour(s). Check local warnings.`;
+
     } else if (next3Chance >= 60 || next3Rain >= 1 || nearWet) {
       $("headline").textContent = "Rain may arrive soon";
-      $("summary").textContent = `Rain chance is up to ${Math.round(next3Chance)}% over the next 3 hours.`;
+      $("summary").textContent =
+        `Rain chance is up to ${Math.round(next3Chance)}% over the next 3 hours.`;
+
     } else {
       $("headline").textContent = "Rain unlikely soon";
-      $("summary").textContent = "No strong rain signal in the next few hours. Forecasts can change.";
+      $("summary").textContent =
+        "No strong rain signal in the next few hours. Forecasts can change.";
     }
 
-    $("updated").textContent = `Now: ${num(current.temperature_2m,0)}°C · ${description(current.weather_code)} · Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
+    $("updated").textContent =
+      `Now: ${num(current.temperature_2m,0)}°C · ${description(current.weather_code)} · Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
 
+    updateRainTiming(h, start);
+
+    // Show a separate warning only when rain or storms are indicated.
     if (stormIndex >= 0) {
+      $("warning").hidden = false;
       $("warning").className = "card alert danger";
       $("warningTitle").textContent = "Thunderstorm possible";
-      $("warningText").textContent = `The forecast indicates a possible storm around ${timeLabel(h.time[start+stormIndex])}. This is a model forecast, not live lightning detection.`;
+      $("warningText").textContent =
+        `The forecast indicates a possible storm around ${timeLabel(h.time[start+stormIndex])}. This is a model forecast, not live lightning detection.`;
+
     } else if (next3Chance >= 60 || next3Rain >= 1) {
+      $("warning").hidden = false;
       $("warning").className = "card alert";
       $("warningTitle").textContent = "Rain may be on the way";
-      $("warningText").textContent = `Rain chance reaches ${Math.round(next3Chance)}% in the next 3 hours, with about ${rainText(next3Rain)} forecast.`;
+      $("warningText").textContent =
+        `Rain chance reaches ${Math.round(next3Chance)}% in the next 3 hours, with about ${rainText(next3Rain)} forecast.`;
+
     } else {
-      $("warning").className = "card alert safe";
-      $("warningTitle").textContent = "No strong rain signal nearby";
-      $("warningText").textContent = "Rain is not strongly indicated in the next few hours. Keep checking if the weather changes.";
+      $("warning").hidden = true;
     }
 
-    $("hourly").innerHTML = h.time.slice(start,start+24).map((t,i)=>{
+    $("hourly").innerHTML = h.time.slice(start,start+24).map((t,i) => {
       const j = start+i;
+
       return `<div class="hour">
         <div class="time">${i===0?"Now":timeLabel(t)}</div>
         <div class="symbol">${symbol(h.weather_code[j])}</div>
@@ -282,18 +628,33 @@ async function loadForecast() {
       </div>`;
     }).join("");
 
-    $("daily").innerHTML = d.time.map((t,i)=>`
+    $("daily").innerHTML = d.time.slice(0,3).map((t,i) => `
       <div class="day">
-        <div><strong>${i===0?"Today":dayLabel(t)}</strong><div class="desc">${description(d.weather_code[i])}</div></div>
-        <div style="text-align:right"><strong>${num(d.temperature_2m_max[i],0)}° / ${num(d.temperature_2m_min[i],0)}°</strong><div class="desc">${Math.round(d.precipitation_probability_max[i]||0)}% rain · ${rainText(d.precipitation_sum[i]||0)}</div></div>
-      </div>`).join("");
+        <div style="display:flex;align-items:center">
+          <span class="weather-icon">${symbol(d.weather_code[i])}</span>
+          <div>
+            <strong>${i===0?"Today":i===1?"Tomorrow":"Day after tomorrow"}</strong>
+            <div class="desc">${dayLabel(t)} · ${description(d.weather_code[i])}</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <strong>${num(d.temperature_2m_max[i],0)}° / ${num(d.temperature_2m_min[i],0)}°</strong>
+          <div class="desc">${Math.round(d.precipitation_probability_max[i]||0)}% rain · ${rainText(d.precipitation_sum[i]||0)}</div>
+        </div>
+      </div>
+    `).join("");
 
     $("message").textContent = "Forecast updated.";
     setLocationLabel();
+
   } catch (e) {
     $("headline").textContent = "Forecast unavailable";
-    $("summary").textContent = "Check your internet connection and try refreshing.";
-    $("message").textContent = "Could not load forecast data.";
+    $("summary").textContent =
+      "Check your internet connection and try refreshing.";
+    $("message").textContent =
+      `Could not load forecast data: ${e.message}`;
+    console.error("RainWatch forecast error:", e);
+
   } finally {
     $("refreshBtn").disabled = false;
   }
@@ -301,35 +662,76 @@ async function loadForecast() {
 
 function useLocation() {
   if (!navigator.geolocation) {
-    $("message").textContent = "Location is not supported by this browser.";
+    place = "Trivandrum, Kerala";
+    lat = DEFAULT_LAT;
+    lon = DEFAULT_LON;
+    setLocationLabel();
+    $("message").textContent =
+      "Location is not supported by this browser. Using Trivandrum.";
+    loadForecast();
     return;
   }
-  $("message").textContent = "Requesting location permission…";
-  navigator.geolocation.getCurrentPosition(pos => {
-    lat = pos.coords.latitude;
-    lon = pos.coords.longitude;
-    place = `Your location (${lat.toFixed(3)}, ${lon.toFixed(3)})`;
-    setLocationLabel();
-    loadForecast();
-  }, () => {
-    $("message").textContent = "Location permission was denied or unavailable. Showing Trivandrum forecast.";
-  }, {enableHighAccuracy:false, timeout:12000, maximumAge:600000});
+
+  $("locRefresh").disabled = true;
+  $("message").textContent = "Detecting your location…";
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      lat = pos.coords.latitude;
+      lon = pos.coords.longitude;
+      place = "Your current location";
+
+      $("locRefresh").disabled = false;
+      setLocationLabel();
+      loadForecast();
+    },
+
+    error => {
+      place = "Trivandrum, Kerala";
+      lat = DEFAULT_LAT;
+      lon = DEFAULT_LON;
+
+      $("locRefresh").disabled = false;
+      setLocationLabel();
+
+      if (error.code === 1) {
+        $("message").textContent =
+          "Location permission denied. Showing Trivandrum forecast.";
+      } else {
+        $("message").textContent =
+          "Unable to detect location. Showing Trivandrum forecast.";
+      }
+
+      loadForecast();
+    },
+
+    {
+      enableHighAccuracy: false,
+      timeout: 12000,
+      maximumAge: 600000
+    }
+  );
 }
 
-$("locBtn").addEventListener("click",useLocation);
-$("locBtn2").addEventListener("click",useLocation);
-$("refreshBtn").addEventListener("click",loadForecast);
-$("mapBtn").addEventListener("click",()=>{
+$("locRefresh").addEventListener("click", useLocation);
+
+$("refreshBtn").addEventListener("click", loadForecast);
+
+$("mapBtn").addEventListener("click", () => {
   $("mapSection").hidden = !$("mapSection").hidden;
-  if (!$("mapSection").hidden) $("mapSection").scrollIntoView({behavior:"smooth"});
-});
-$("alertBtn").addEventListener("click",()=>{
-  alert("RainWatch does not send background notifications yet. Browser alerts require permission and may not work when the page is closed. Background phone alerts will need the separate GitHub Actions + ntfy setup.");
+
+  if (!$("mapSection").hidden) {
+    $("mapSection").scrollIntoView({behavior:"smooth"});
+  }
 });
 
+// Set up the map and automatically detect location.
 setLocationLabel();
-loadForecast();
-setInterval(loadForecast,15*60*1000);
+useLocation();
+
+// Refresh the forecast every 15 minutes.
+setInterval(loadForecast, 15*60*1000);
 </script>
+
 </body>
 </html>
